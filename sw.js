@@ -1,4 +1,4 @@
-Const CACHE_NAME = 'mirzapur-mandal-v1';
+Const CACHE_NAME = 'agra-mandal-v1';
 const ASSETS_TO_CACHE = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', (event) => {
