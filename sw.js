@@ -1,12 +1,32 @@
-Const CACHE_NAME = 'agra-mandal-v1';
-const ASSETS_TO_CACHE = ['/', '/index.html', '/manifest.json'];
+const CACHE_NAME = 'agra-mandal-v2';
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)));
+self.addEventListener('install', event => { 
+  self.skipWaiting(); 
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(cacheNames.map(cache => {
+        if (cache !== CACHE_NAME) return caches.delete(cache);
+      }));
+    }).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET' || event.request.url.includes('script.google.com')) return;
+
   event.respondWith(
-    caches.match(event.request).then((response) => response || fetch(event.request))
+    caches.match(event.request).then(cachedResponse => {
+      const fetchPromise = fetch(event.request).then(networkResponse => {
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, networkResponse.clone());
+        });
+        return networkResponse;
+      }).catch(() => cachedResponse); 
+      
+      return cachedResponse || fetchPromise;
+    })
   );
 });
