@@ -1,6 +1,6 @@
 {
   "name": "Agra Mandal App",
-  "short_name": "MM App",
+  "short_name": "AM App",
   "description": "District Management System",
   "start_url": "index.html?v=6",
   "display": "standalone",
